@@ -1,0 +1,1468 @@
+[gd_scene format=3 uid="uid://h5s0yj7cdtjf"]
+
+[ext_resource type="Script" path="res://scripts/launcher.gd" id="sc_launcher"]
+[ext_resource type="Script" path="res://scripts/bucket.gd" id="sc_bucket"]
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="sc_gm"]
+[ext_resource type="Script" path="res://scripts/peg_board.gd" id="sc_pegboard"]
+[ext_resource type="Script" path="res://scripts/ball.gd" id="sc_ball"]
+[ext_resource type="Script" path="res://scripts/ring.gd" id="sc_ring"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="sc_hud"]
+[ext_resource type="Texture2D" path="res://assets/peg.svg" id="tex1"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="tex2"]
+[ext_resource type="Texture2D" path="res://assets/launcher.svg" id="tex3"]
+[ext_resource type="Texture2D" path="res://assets/ring.svg" id="tex4"]
+[ext_resource type="Texture2D" path="res://assets/bar.svg" id="tex5"]
+[ext_resource type="Texture2D" path="res://assets/zone_dark_120.svg" id="tex6"]
+[ext_resource type="Texture2D" path="res://assets/zone_purple_200.svg" id="tex7"]
+[ext_resource type="Texture2D" path="res://assets/zone_dark_140.svg" id="tex8"]
+[ext_resource type="Texture2D" path="res://assets/zone_blue_200.svg" id="tex9"]
+[ext_resource type="Texture2D" path="res://assets/zone_dark_100.svg" id="tex10"]
+[ext_resource type="Texture2D" path="res://assets/zone_purple_60.svg" id="tex11"]
+[ext_resource type="Texture2D" path="res://assets/zone_gold_360.svg" id="tex12"]
+[ext_resource type="Texture2D" path="res://assets/zone_dark_160.svg" id="tex13"]
+[ext_resource type="Texture2D" path="res://assets/zone_dark_180.svg" id="tex14"]
+[ext_resource type="Texture2D" path="res://assets/zone_teal_140.svg" id="tex15"]
+[ext_resource type="Script" path="res://scripts/spinner.gd" id="sc_spinner"]
+[ext_resource type="Script" path="res://scripts/portal.gd" id="sc_portal"]
+[ext_resource type="Script" path="res://scripts/booster.gd" id="sc_booster"]
+
+[sub_resource type="RectangleShape2D" id="RS_floor"]
+size = Vector2(1900, 50)
+
+[sub_resource type="CircleShape2D" id="CS_ball"]
+radius = 20.0
+
+[sub_resource type="PhysicsMaterial" id="PM_ball"]
+friction = 0.1
+bounce = 0.8
+
+[sub_resource type="RectangleShape2D" id="RS_wall_v"]
+size = Vector2(20, 1080)
+
+[sub_resource type="RectangleShape2D" id="RS_ceiling"]
+size = Vector2(1920, 20)
+
+[sub_resource type="CircleShape2D" id="CS_peg"]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id="CS_ring"]
+radius = 34.0
+
+[sub_resource type="RectangleShape2D" id="RS_bar"]
+size = Vector2(10, 60)
+
+[sub_resource type="RectangleShape2D" id="RS_z120"]
+size = Vector2(120, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z200"]
+size = Vector2(200, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z140"]
+size = Vector2(140, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z100"]
+size = Vector2(100, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z60"]
+size = Vector2(60, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z360"]
+size = Vector2(360, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z160"]
+size = Vector2(160, 70)
+
+[sub_resource type="RectangleShape2D" id="RS_z180"]
+size = Vector2(180, 70)
+
+[node name="Main" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("sc_gm")
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(960, 1000)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RS_floor")
+
+[node name="BallTemplate" type="RigidBody2D" parent="."]
+visible = false
+freeze = true
+position = Vector2(960, 100)
+physics_material_override = SubResource("PM_ball")
+script = ExtResource("sc_ball")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BallTemplate"]
+shape = SubResource("CS_ball")
+
+[node name="Sprite2D" type="Sprite2D" parent="BallTemplate"]
+texture = ExtResource("tex2")
+scale = Vector2(0.3, 0.3)
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(10, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("RS_wall_v")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(1910, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("RS_wall_v")
+
+[node name="Ceiling" type="StaticBody2D" parent="."]
+position = Vector2(960, 10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
+shape = SubResource("RS_ceiling")
+
+[node name="PegBoard" type="Node2D" parent="."]
+script = ExtResource("sc_pegboard")
+disable_ratio = 0.25
+moving_ratio = 0.25
+move_amplitude = 55.0
+
+[node name="Peg_r0_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(240, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(360, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(480, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(600, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(720, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(840, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(960, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1080, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1200, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1320, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1440, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r0_c11" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1560, 260)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r0_c11"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r0_c11"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(300, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(420, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(540, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(660, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(780, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(900, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1020, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1140, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1260, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1380, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r1_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1500, 340)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r1_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r1_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(240, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(360, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(480, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(600, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(720, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(840, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(960, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1080, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1200, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1320, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1440, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r2_c11" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1560, 420)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r2_c11"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r2_c11"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(300, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(420, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(540, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(660, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(780, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(900, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1020, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1140, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1260, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1380, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r3_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1500, 500)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r3_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r3_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(240, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(360, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(480, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(600, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(720, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(840, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(960, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1080, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1200, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1320, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1440, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r4_c11" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1560, 580)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r4_c11"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r4_c11"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(300, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(420, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(540, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(660, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(780, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(900, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1020, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1140, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1260, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1380, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r5_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1500, 660)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r5_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r5_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(240, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(360, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(480, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(600, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(720, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(840, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(960, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1080, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1200, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1320, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1440, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c10"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r6_c11" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1560, 740)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r6_c11"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r6_c11"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c0" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(300, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c0"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c0"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c1" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(420, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c1"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c1"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c2" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(540, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c2"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c2"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c3" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(660, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c3"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c3"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c4" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(780, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c4"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c4"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c5" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(900, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c5"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c5"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c6" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1020, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c6"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c6"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c7" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1140, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c7"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c7"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c8" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1260, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c8"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c8"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c9" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1380, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c9"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c9"]
+shape = SubResource("CS_peg")
+
+[node name="Peg_r7_c10" type="StaticBody2D" parent="PegBoard"]
+position = Vector2(1500, 820)
+
+[node name="Sprite2D" type="Sprite2D" parent="PegBoard/Peg_r7_c10"]
+texture = ExtResource("tex1")
+modulate = Color(1, 1, 1, 0.85)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PegBoard/Peg_r7_c10"]
+shape = SubResource("CS_peg")
+
+[node name="RingA" type="Area2D" parent="."]
+position = Vector2(560, 330)
+script = ExtResource("sc_ring")
+score_value = 60
+move_amplitude = 100
+move_speed = 0.6
+
+[node name="Sprite2D" type="Sprite2D" parent="RingA"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RingA"]
+shape = SubResource("CS_ring")
+
+[node name="RingB" type="Area2D" parent="."]
+position = Vector2(960, 470)
+script = ExtResource("sc_ring")
+score_value = 60
+move_amplitude = 140
+move_speed = 0.6
+
+[node name="Sprite2D" type="Sprite2D" parent="RingB"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RingB"]
+shape = SubResource("CS_ring")
+
+[node name="RingC" type="Area2D" parent="."]
+position = Vector2(1360, 610)
+script = ExtResource("sc_ring")
+score_value = 60
+move_amplitude = 100
+move_speed = 0.6
+
+[node name="Sprite2D" type="Sprite2D" parent="RingC"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RingC"]
+shape = SubResource("CS_ring")
+
+[node name="RingD" type="Area2D" parent="."]
+position = Vector2(700, 750)
+script = ExtResource("sc_ring")
+score_value = 60
+move_amplitude = 90
+move_speed = 0.6
+
+[node name="Sprite2D" type="Sprite2D" parent="RingD"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RingD"]
+shape = SubResource("CS_ring")
+
+[node name="Sep_120" type="StaticBody2D" parent="."]
+position = Vector2(120, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_120"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_120"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_320" type="StaticBody2D" parent="."]
+position = Vector2(320, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_320"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_320"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_460" type="StaticBody2D" parent="."]
+position = Vector2(460, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_460"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_460"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_660" type="StaticBody2D" parent="."]
+position = Vector2(660, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_660"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_660"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_760" type="StaticBody2D" parent="."]
+position = Vector2(760, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_760"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_760"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_820" type="StaticBody2D" parent="."]
+position = Vector2(820, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_820"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_820"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_1180" type="StaticBody2D" parent="."]
+position = Vector2(1180, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_1180"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_1180"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_1240" type="StaticBody2D" parent="."]
+position = Vector2(1240, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_1240"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_1240"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_1400" type="StaticBody2D" parent="."]
+position = Vector2(1400, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_1400"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_1400"]
+shape = SubResource("RS_bar")
+
+[node name="Sep_1600" type="StaticBody2D" parent="."]
+position = Vector2(1600, 890)
+
+[node name="Sprite2D" type="Sprite2D" parent="Sep_1600"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sep_1600"]
+shape = SubResource("RS_bar")
+
+[node name="ZoneN0" type="Area2D" parent="."]
+position = Vector2(60, 975)
+script = ExtResource("sc_bucket")
+is_reward = false
+
+[node name="Sprite2D" type="Sprite2D" parent="ZoneN0"]
+texture = ExtResource("tex6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneN0"]
+shape = SubResource("RS_z120")
+
+[node name="BucketFar" type="Area2D" parent="."]
+position = Vector2(220, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 5
+score_value = 600
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketFar"]
+texture = ExtResource("tex7")
+
+[node name="Label" type="Label" parent="BucketFar"]
+position = Vector2(-98.0, -36)
+size = Vector2(196, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "+5球 +600分"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketFar"]
+shape = SubResource("RS_z200")
+
+[node name="ZoneN1" type="Area2D" parent="."]
+position = Vector2(390, 975)
+script = ExtResource("sc_bucket")
+is_reward = false
+
+[node name="Sprite2D" type="Sprite2D" parent="ZoneN1"]
+texture = ExtResource("tex8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneN1"]
+shape = SubResource("RS_z140")
+
+[node name="BucketMid2" type="Area2D" parent="."]
+position = Vector2(560, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 3
+score_value = 300
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketMid2"]
+texture = ExtResource("tex9")
+
+[node name="Label" type="Label" parent="BucketMid2"]
+position = Vector2(-98.0, -36)
+size = Vector2(196, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "+3球 +300分"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketMid2"]
+shape = SubResource("RS_z200")
+
+[node name="ZoneN2" type="Area2D" parent="."]
+position = Vector2(710, 975)
+script = ExtResource("sc_bucket")
+is_reward = false
+
+[node name="Sprite2D" type="Sprite2D" parent="ZoneN2"]
+texture = ExtResource("tex10")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneN2"]
+shape = SubResource("RS_z100")
+
+[node name="BucketJackL" type="Area2D" parent="."]
+position = Vector2(790, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 4
+score_value = 500
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketJackL"]
+texture = ExtResource("tex11")
+
+[node name="Label" type="Label" parent="BucketJackL"]
+position = Vector2(-29.0, -36)
+size = Vector2(58, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 24
+text = "+4球"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketJackL"]
+shape = SubResource("RS_z60")
+
+[node name="BucketBig" type="Area2D" parent="."]
+position = Vector2(1000, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 2
+score_value = 200
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketBig"]
+texture = ExtResource("tex12")
+
+[node name="Label" type="Label" parent="BucketBig"]
+position = Vector2(-100.0, -36)
+size = Vector2(200, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 38
+text = "+2球 +200分"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketBig"]
+shape = SubResource("RS_z360")
+
+[node name="BucketJackR" type="Area2D" parent="."]
+position = Vector2(1210, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 3
+score_value = 350
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketJackR"]
+texture = ExtResource("tex11")
+
+[node name="Label" type="Label" parent="BucketJackR"]
+position = Vector2(-29.0, -36)
+size = Vector2(58, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 24
+text = "+3球"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketJackR"]
+shape = SubResource("RS_z60")
+
+[node name="ZoneN3" type="Area2D" parent="."]
+position = Vector2(1320, 975)
+script = ExtResource("sc_bucket")
+is_reward = false
+
+[node name="Sprite2D" type="Sprite2D" parent="ZoneN3"]
+texture = ExtResource("tex13")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneN3"]
+shape = SubResource("RS_z160")
+
+[node name="BucketMid1" type="Area2D" parent="."]
+position = Vector2(1500, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 1
+score_value = 120
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketMid1"]
+texture = ExtResource("tex9")
+
+[node name="Label" type="Label" parent="BucketMid1"]
+position = Vector2(-98.0, -36)
+size = Vector2(196, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "+1球 +120分"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketMid1"]
+shape = SubResource("RS_z200")
+
+[node name="ZoneN4" type="Area2D" parent="."]
+position = Vector2(1690, 975)
+script = ExtResource("sc_bucket")
+is_reward = false
+
+[node name="Sprite2D" type="Sprite2D" parent="ZoneN4"]
+texture = ExtResource("tex14")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneN4"]
+shape = SubResource("RS_z180")
+
+[node name="BucketNear" type="Area2D" parent="."]
+position = Vector2(1850, 975)
+script = ExtResource("sc_bucket")
+is_reward = true
+reward_balls = 1
+score_value = 50
+
+[node name="Sprite2D" type="Sprite2D" parent="BucketNear"]
+texture = ExtResource("tex15")
+
+[node name="Label" type="Label" parent="BucketNear"]
+position = Vector2(-68.0, -36)
+size = Vector2(136, 72)
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 30
+text = "+1球 +50分"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BucketNear"]
+shape = SubResource("RS_z140")
+
+[node name="Launcher" type="Node2D" parent="."]
+position = Vector2(1700, 900)
+script = ExtResource("sc_launcher")
+ball_template = NodePath("../BallTemplate")
+
+[node name="AimLine" type="Line2D" parent="Launcher"]
+points = PackedVector2Array(0, 0, 0, -180)
+width = 6.0
+default_color = Color(1, 1, 1, 0.5)
+
+[node name="Sprite2D" type="Sprite2D" parent="Launcher"]
+texture = ExtResource("tex3")
+
+[node name="HUD" parent="." instance=ExtResource("sc_hud")]
+
+[node name="SpinnerA" type="AnimatableBody2D" parent="."]
+position = Vector2(620, 170)
+script = ExtResource("sc_spinner")
+
+[node name="Sprite2D" type="Sprite2D" parent="SpinnerA"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpinnerA"]
+shape = SubResource("RS_bar")
+
+[node name="SpinnerB" type="AnimatableBody2D" parent="."]
+position = Vector2(1300, 170)
+script = ExtResource("sc_spinner")
+
+[node name="Sprite2D" type="Sprite2D" parent="SpinnerB"]
+texture = ExtResource("tex5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpinnerB"]
+shape = SubResource("RS_bar")
+
+[node name="PortalL" type="Area2D" parent="."]
+position = Vector2(120, 620)
+script = ExtResource("sc_portal")
+target = NodePath("../PortalR")
+
+[node name="Sprite2D" type="Sprite2D" parent="PortalL"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PortalL"]
+shape = SubResource("CS_ring")
+
+[node name="PortalR" type="Area2D" parent="."]
+position = Vector2(1800, 620)
+script = ExtResource("sc_portal")
+target = NodePath("../PortalL")
+
+[node name="Sprite2D" type="Sprite2D" parent="PortalR"]
+texture = ExtResource("tex4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PortalR"]
+shape = SubResource("CS_ring")
+
+[node name="BoosterL" type="Area2D" parent="."]
+position = Vector2(120, 470)
+script = ExtResource("sc_booster")
+boost_direction = Vector2(1, -0.25)
+
+[node name="Sprite2D" type="Sprite2D" parent="BoosterL"]
+texture = ExtResource("tex15")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoosterL"]
+shape = SubResource("RS_z140")
+
+[node name="BoosterR" type="Area2D" parent="."]
+position = Vector2(1800, 470)
+script = ExtResource("sc_booster")
+boost_direction = Vector2(-1, -0.25)
+
+[node name="Sprite2D" type="Sprite2D" parent="BoosterR"]
+texture = ExtResource("tex15")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoosterR"]
+shape = SubResource("RS_z140")

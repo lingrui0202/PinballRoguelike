@@ -1,0 +1,140 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="ScoreLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 24.0
+offset_right = 640.0
+offset_bottom = 96.0
+theme_override_font_sizes/font_size = 46
+text = "分数 0 / 3000"
+
+[node name="BallsLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 100.0
+offset_right = 400.0
+offset_bottom = 164.0
+theme_override_font_sizes/font_size = 42
+text = "球数 50"
+
+[node name="TimeLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 168.0
+offset_right = 400.0
+offset_bottom = 232.0
+theme_override_font_sizes/font_size = 42
+text = "剩余 90 s"
+
+[node name="LevelLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 236.0
+offset_right = 640.0
+offset_bottom = 300.0
+theme_override_font_sizes/font_size = 36
+text = "第 1 关"
+
+[node name="ComboLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 304.0
+offset_right = 520.0
+offset_bottom = 364.0
+theme_override_font_sizes/font_size = 32
+text = ""
+
+[node name="TabHint" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 372.0
+offset_right = 520.0
+offset_bottom = 412.0
+theme_override_font_sizes/font_size = 24
+text = "按 Tab 查看属性 / 选关"
+
+[node name="ChargeBar" type="ProgressBar" parent="."]
+offset_left = 810.0
+offset_top = 1006.0
+offset_right = 1110.0
+offset_bottom = 1046.0
+value = 35.0
+show_percentage = false
+
+[node name="SettleButton" type="Button" parent="."]
+offset_left = 1620.0
+offset_top = 40.0
+offset_right = 1880.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 36
+text = "结算"
+
+[node name="StatsPanel" type="Panel" parent="."]
+visible = false
+offset_left = 1420.0
+offset_top = 150.0
+offset_right = 1890.0
+offset_bottom = 760.0
+
+[node name="StatsLabel" type="Label" parent="StatsPanel"]
+offset_left = 20.0
+offset_top = 15.0
+offset_right = 450.0
+offset_bottom = 430.0
+theme_override_font_sizes/font_size = 26
+text = "当前属性"
+
+[node name="LevelScroll" type="ScrollContainer" parent="StatsPanel"]
+offset_left = 20.0
+offset_top = 445.0
+offset_right = 450.0
+offset_bottom = 535.0
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="ResultPanel" type="Panel" parent="."]
+visible = false
+offset_left = 560.0
+offset_top = 300.0
+offset_right = 1360.0
+offset_bottom = 790.0
+
+[node name="ResultLabel" type="Label" parent="ResultPanel"]
+offset_left = 40.0
+offset_top = 25.0
+offset_right = 760.0
+offset_bottom = 210.0
+theme_override_font_sizes/font_size = 32
+text = "结算"
+
+[node name="BuffButton1" type="Button" parent="ResultPanel"]
+offset_left = 40.0
+offset_top = 225.0
+offset_right = 760.0
+offset_bottom = 305.0
+theme_override_font_sizes/font_size = 24
+text = "强化 1"
+
+[node name="BuffButton2" type="Button" parent="ResultPanel"]
+offset_left = 40.0
+offset_top = 315.0
+offset_right = 760.0
+offset_bottom = 395.0
+theme_override_font_sizes/font_size = 24
+text = "强化 2"
+
+[node name="BuffButton3" type="Button" parent="ResultPanel"]
+offset_left = 40.0
+offset_top = 405.0
+offset_right = 760.0
+offset_bottom = 485.0
+theme_override_font_sizes/font_size = 24
+text = "强化 3"
+
+[node name="RetryButton" type="Button" parent="ResultPanel"]
+offset_left = 280.0
+offset_top = 260.0
+offset_right = 520.0
+offset_bottom = 330.0
+theme_override_font_sizes/font_size = 32
+text = "重试本局"
