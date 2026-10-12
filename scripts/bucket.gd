@@ -84,8 +84,9 @@ func _on_body_entered(body: Node2D) -> void:
 		_gm.add_balls(back)
 		_spawn_float_text("+%d 球   +%d 分" % [back, gained], body.global_position)
 		_flash()
-
-	# 普通区域：球安静消失，不再飘 MISS
+	elif _gm != null:
+		# 普通区域：球安静消失，不再飘 MISS，只计入遥测
+		_gm.telemetry_dead_drops += 1
 
 	body.queue_free()
 	if _gm != null:

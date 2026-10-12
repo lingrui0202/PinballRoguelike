@@ -48,10 +48,18 @@ text = ""
 [node name="TabHint" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 372.0
-offset_right = 520.0
+offset_right = 780.0
 offset_bottom = 412.0
 theme_override_font_sizes/font_size = 24
-text = "按 Tab 查看属性 / 选关"
+text = "Tab 属性/选关 · L 排行榜 · Esc 退出"
+
+[node name="SaveHint" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 416.0
+offset_right = 780.0
+offset_bottom = 456.0
+theme_override_font_sizes/font_size = 22
+text = "存档：第 1 关 · 历史最高 0 分"
 
 [node name="ChargeBar" type="ProgressBar" parent="."]
 offset_left = 810.0
@@ -138,3 +146,65 @@ offset_right = 520.0
 offset_bottom = 330.0
 theme_override_font_sizes/font_size = 32
 text = "重试本局"
+
+[node name="BoardPanel" type="Panel" parent="."]
+visible = false
+offset_left = 60.0
+offset_top = 470.0
+offset_right = 880.0
+offset_bottom = 1010.0
+
+[node name="BoardLabel" type="Label" parent="BoardPanel"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 800.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 24
+text = "排行榜"
+
+[node name="CloseBoardButton" type="Button" parent="BoardPanel"]
+offset_left = 20.0
+offset_top = 490.0
+offset_right = 200.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 24
+text = "关闭"
+
+[node name="ClearSaveButton" type="Button" parent="BoardPanel"]
+offset_left = 220.0
+offset_top = 490.0
+offset_right = 480.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 24
+text = "清空存档"
+
+[node name="QuitPanel" type="Panel" parent="."]
+visible = false
+offset_left = 700.0
+offset_top = 400.0
+offset_right = 1220.0
+offset_bottom = 660.0
+
+[node name="QuitLabel" type="Label" parent="QuitPanel"]
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 490.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 30
+text = "确定退出游戏？\n进度会自动保存"
+
+[node name="QuitOkButton" type="Button" parent="QuitPanel"]
+offset_left = 30.0
+offset_top = 140.0
+offset_right = 240.0
+offset_bottom = 220.0
+theme_override_font_sizes/font_size = 28
+text = "退出"
+
+[node name="QuitCancelButton" type="Button" parent="QuitPanel"]
+offset_left = 270.0
+offset_top = 140.0
+offset_right = 480.0
+offset_bottom = 220.0
+theme_override_font_sizes/font_size = 28
+text = "取消"

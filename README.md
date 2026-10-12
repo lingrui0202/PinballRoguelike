@@ -13,9 +13,18 @@
 | 按住左键 | 蓄力，越满越准、力度越大 |
 | 松开左键 | 发射，消耗 1 颗库存球 |
 | Tab | 查看累积强化、剩余图钉、关卡跳转 |
+| L | 排行榜：前 10 局成绩 + 历史最高分 |
+| Esc | 退出确认（退出前自动存档） |
+| F1 | 开关准星 |
 | 右上角"结算" | 随时提前结束本局 |
 
 **蓄力拉满会打出重球**：橙色、质量更大，撞脆钉一击必碎且图钉分双倍。
+
+## 存档与排行榜
+
+- **存档**（`user://save.json`）：每次结算、每次退出自动保存——当前关卡、已解锁关卡、累积强化、历史最高分。下次打开接着上次的关卡和强化继续，HUD 左下角显示"存档：第 N 关 · 历史最高 X 分"。
+- **排行榜**（`user://leaderboard.json`）：每局结算记一条（分数 / 关卡 / 是否过关 / 发射数 / 时间），按分数取前 10，按 `L` 查看；面板里"清空存档"会把进度和榜单一起清掉。
+- 只存**局外进度**，不存局内状态（剩余球数、剩余时间、场上球的位置）：一局只有 90 秒，重开一局的成本远低于把物理场景整个序列化。
 
 ## 台面元素
 
@@ -48,16 +57,31 @@
 
 - 核心循环已跑通并通过无头冒烟测试：发射 → 弹 → 进洞 → 球数/分数变化 → 再来一发
 - 已完成：球数经济、计分与连击、金环、脆钉/硬钉、重球、台面元素、15 种局间三选一强化、关卡递进、HUD 与结算
-- 目标分仍是粗调值（第 1 关 24000），待真机手感验证后再校准
+- 目标分已按无头试玩数据重校准：第 1 关 18000（2026-10-12，与洞口回球 -1 同步调整），仍待真机手感验证
 
 ## 项目结构
 
 ```
 scenes/         Main.tscn（主场景）、ui/HUD.tscn
+scenes3d/       LauncherPreview.tscn（3D 资源预览场景）
 scripts/        GameManager、Launcher、Ball、PegBoard、Bucket、Ring
                 Spinner、Portal、Booster、ui/hud.gd
 assets/         SVG 占位素材
+assets3d/       launcher.glb（发射器 3D 资源）+ Godot 预览截图
+tools/blender/  build_launcher.py（bpy 建模脚本，可重复跑）
+tools/          capture_preview.gd（生成 3D 预览场景 + 截图）
+tests/          ab_test.gd（弹性 A/B）、chaos_test.gd（乱打/瞄准模拟）
 docs/           设计文档（见下）
+```
+
+### 3D 资源（发射器）
+
+发射器已做成 3D 资源（Blender 4.2 + bpy 脚本，三角面 2512、高 1.142、原点在底面中心），工程里只放 `.glb`；
+`.blend` 源文件放在提交目录（放工程里会触发 Godot 的 Blender 导入器报错）。重建方式：
+
+```bash
+blender --background --python tools/blender/build_launcher.py     # 重建模型 + 导出 glb + 渲染三视图
+godot --path . -s tools/capture_preview.gd                        # 生成预览场景 + 预览截图
 ```
 
 设计文档在 `docs/`：

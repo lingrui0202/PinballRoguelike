@@ -1,0 +1,30 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets3d/launcher.glb" id="1_x4wuk"]
+
+[sub_resource type="Environment" id="Environment_3i1ut"]
+background_mode = 1
+background_color = Color(0.9, 0.92, 0.95, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.75, 0.8, 0.88, 1)
+ambient_light_energy = 0.7
+
+[node name="LauncherPreview" type="Node3D" unique_id=1547693483]
+
+[node name="Launcher" type="Node3D" parent="." unique_id=1463805452 instance=ExtResource("1_x4wuk")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1080641796]
+environment = SubResource("Environment_3i1ut")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=157193472]
+transform = Transform3D(0.8, -0.4038245, 0.4437632, 0, 0.7396053, 0.67304087, -0.59999996, -0.5384327, 0.5916843, 3, 5, 4)
+light_energy = 1.4
+
+[node name="FillLight" type="DirectionalLight3D" parent="." unique_id=590536312]
+transform = Transform3D(-0.6, 0.23687904, -0.7641259, 0, 0.9551574, 0.2960988, 0.8, 0.17765929, -0.5730944, -4, 2, -3)
+light_energy = 0.6
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1798463549]
+transform = Transform3D(0.7511649, -0.17393869, 0.63678616, 0, 0.96466005, 0.2634977, -0.66011465, -0.19793023, 0.72461873, 1.45, 1.05, 1.65)
+current = true
+fov = 45.0

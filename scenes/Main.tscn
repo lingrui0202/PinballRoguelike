@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://h5s0yj7cdtjf"]
 
 [ext_resource type="Script" path="res://scripts/launcher.gd" id="sc_launcher"]
+[ext_resource type="Script" path="res://scripts/crosshair.gd" id="sc_crosshair"]
 [ext_resource type="Script" path="res://scripts/bucket.gd" id="sc_bucket"]
 [ext_resource type="Script" path="res://scripts/GameManager.gd" id="sc_gm"]
 [ext_resource type="Script" path="res://scripts/peg_board.gd" id="sc_pegboard"]
@@ -1201,7 +1202,7 @@ shape = SubResource("RS_z120")
 position = Vector2(220, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 5
+reward_balls = 4
 score_value = 600
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketFar"]
@@ -1233,7 +1234,7 @@ shape = SubResource("RS_z140")
 position = Vector2(560, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 3
+reward_balls = 2
 score_value = 300
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketMid2"]
@@ -1265,7 +1266,7 @@ shape = SubResource("RS_z100")
 position = Vector2(790, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 4
+reward_balls = 3
 score_value = 500
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketJackL"]
@@ -1286,7 +1287,7 @@ shape = SubResource("RS_z60")
 position = Vector2(1000, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 2
+reward_balls = 1
 score_value = 200
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketBig"]
@@ -1307,7 +1308,7 @@ shape = SubResource("RS_z360")
 position = Vector2(1210, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 3
+reward_balls = 2
 score_value = 350
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketJackR"]
@@ -1339,7 +1340,7 @@ shape = SubResource("RS_z160")
 position = Vector2(1500, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 1
+reward_balls = 0
 score_value = 120
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketMid1"]
@@ -1371,7 +1372,7 @@ shape = SubResource("RS_z180")
 position = Vector2(1850, 975)
 script = ExtResource("sc_bucket")
 is_reward = true
-reward_balls = 1
+reward_balls = 0
 score_value = 50
 
 [node name="Sprite2D" type="Sprite2D" parent="BucketNear"]
@@ -1466,3 +1467,9 @@ texture = ExtResource("tex15")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BoosterR"]
 shape = SubResource("RS_z140")
+
+[node name="Cursor" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Crosshair" type="Node2D" parent="Cursor"]
+script = ExtResource("sc_crosshair")

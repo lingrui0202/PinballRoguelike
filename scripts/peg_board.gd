@@ -107,6 +107,7 @@ func _break_peg(peg: Node) -> void:
 
 	_alive_left = maxi(0, _alive_left - 1)
 	if _gm != null:
+		_gm.telemetry_peg_breaks += 1
 		_gm.add_score(break_score + _gm.bonus_break_score)
 
 	if _alive_left <= 0 and not _cleared:

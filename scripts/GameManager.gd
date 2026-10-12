@@ -26,7 +26,7 @@ const BUFF_COUNT := 15
 
 ## 难度曲线
 ## 数值依据：2026-09-27 实测，无脑连发 90 发约 6 万分；目标分定在"中等水平打满一局能过"的位置
-@export var base_target_score: int = 24000
+@export var base_target_score: int = 18000
 @export var target_score_step: int = 5000
 @export var base_round_seconds: float = 90.0
 @export var round_seconds_step: float = 5.0
@@ -93,8 +93,31 @@ var bonus_break_score: int = 0
 
 var _auto_settle_timer: float = -1.0
 
+## 试玩遥测（作业2）：统计一局内的关键行为，结算时打印一行 JSON。
+## 用法：正常游玩即可，结算（过关/失败/时间到）后看控制台输出 TELEMETRY 行。
+var telemetry_shots: int = 0
+var telemetry_bucket_hits: int = 0
+var telemetry_dead_drops: int = 0
+var telemetry_peg_breaks: int = 0
+var telemetry_max_combo: int = 0
+var telemetry_elapsed: float = 0.0
+var telemetry_score_10s := {}
+
+## 本局是否刷新了历史最高分（HUD 结算面板用来显示"新纪录"）
+var last_run_new_record: bool = false
+
+
+## 存档单例。用 /root/SaveManager 取而不是直接用自动加载名：
+## 无头测试（godot -s）不会注册自动加载，直接写名字会编译不过。
+func _save_mgr() -> Node:
+	return get_node_or_null("/root/SaveManager")
+
 
 func _ready() -> void:
+	# 有存档就接着上次的关卡和累积强化继续
+	var sm := _save_mgr()
+	if sm != null and sm.has_progress():
+		apply_state(sm.state)
 	start_round()
 
 
@@ -103,12 +126,18 @@ func _process(delta: float) -> void:
 		return
 
 	time_left -= delta
+	telemetry_elapsed += delta
 	if time_left <= 0.0:
 		time_left = 0.0
 		time_changed.emit(time_left)
 		settle()
 		return
 	time_changed.emit(time_left)
+
+	# 每 10 秒记一次分数快照（看得分节奏）
+	var _mark := str(int(telemetry_elapsed / 10.0) * 10)
+	if not telemetry_score_10s.has(_mark):
+		telemetry_score_10s[_mark] = score
 
 	if combo_timer > 0.0:
 		combo_timer -= delta
@@ -135,6 +164,13 @@ func start_round() -> void:
 	combo_timer = 0.0
 	phase = Phase.PLAYING
 	_auto_settle_timer = -1.0
+	telemetry_shots = 0
+	telemetry_bucket_hits = 0
+	telemetry_dead_drops = 0
+	telemetry_peg_breaks = 0
+	telemetry_max_combo = 0
+	telemetry_elapsed = 0.0
+	telemetry_score_10s = {}
 	_apply_level_difficulty()
 	balls_changed.emit(balls)
 	score_changed.emit(score)
@@ -160,6 +196,7 @@ func consume_fire() -> bool:
 		return false
 	balls -= fire_cost
 	balls_changed.emit(balls)
+	telemetry_shots += 1
 	return true
 
 
@@ -183,6 +220,8 @@ func on_peg_hit(mult: int = 1) -> void:
 func on_bucket_enter(base_score: int) -> int:
 	combo += 1
 	combo_timer = combo_window + bonus_combo_window
+	telemetry_bucket_hits += 1
+	telemetry_max_combo = maxi(telemetry_max_combo, combo)
 	combo_changed.emit(combo)
 	if bonus_time_on_bucket > 0.0:
 		time_left += bonus_time_on_bucket
@@ -208,13 +247,51 @@ func settle() -> void:
 		return
 	phase = Phase.SETTLED
 	_auto_settle_timer = -1.0
+	var played_level := level
 	var success := score >= target_score
 	if success:
 		level += 1
 		max_unlocked_level = maxi(max_unlocked_level, level)
 		level_changed.emit(level)
 	phase_changed.emit("SETTLED")
+	_print_telemetry(success)
+	_save_progress(played_level, success)
 	round_result.emit(success, score, level)
+
+
+## 结算即存档：写进度（关卡 / 强化）+ 把本局成绩记进排行榜
+func _save_progress(played_level: int, success: bool) -> void:
+	var sm := _save_mgr()
+	if sm == null:
+		return
+	last_run_new_record = sm.record_run({
+		"score": score,
+		"level": played_level,
+		"target": target_score,
+		"success": success,
+		"shots": telemetry_shots,
+		"max_combo": telemetry_max_combo,
+	})
+	sm.save_state(get_state())
+
+
+## 结算时输出本局遥测：一行 JSON，方便试玩后把数据抄进记录表
+func _print_telemetry(success: bool) -> void:
+	var out := {
+		"level": level,
+		"success": success,
+		"score": score,
+		"target": target_score,
+		"shots": telemetry_shots,
+		"bucket_hits": telemetry_bucket_hits,
+		"dead_drops": telemetry_dead_drops,
+		"peg_breaks": telemetry_peg_breaks,
+		"max_combo": telemetry_max_combo,
+		"balls_left": balls,
+		"seconds_used": snappedf(telemetry_elapsed, 0.1),
+		"score_10s": telemetry_score_10s,
+	}
+	print("TELEMETRY " + JSON.stringify(out))
 
 
 func notify_ball_removed() -> void:
@@ -275,6 +352,64 @@ func apply_buff(index: int) -> void:
 		_:
 			pass
 	buffs_changed.emit()
+
+
+## 存档用：把"局外进度"打包成字典（关卡 + 强化 + 最高分）
+func get_state() -> Dictionary:
+	var sm := _save_mgr()
+	var best := int(sm.state.get("best_score", 0)) if sm != null else 0
+	return {
+		"level": level,
+		"max_unlocked_level": max_unlocked_level,
+		"best_score": best,
+		"buffs": _buffs_dict(),
+	}
+
+
+## 强化累积打包（键名与 SaveManager.EMPTY_BUFFS 一致）
+func _buffs_dict() -> Dictionary:
+	return {
+		"impulse": bonus_impulse,
+		"charge_time": bonus_charge_time,
+		"reward": bonus_reward,
+		"start_balls": bonus_start_balls,
+		"peg_score": bonus_peg_score,
+		"combo_max": bonus_combo_max,
+		"combo_window": bonus_combo_window,
+		"time": bonus_time,
+		"jitter_mult": bonus_jitter_mult,
+		"score_mult": bonus_score_mult,
+		"ball_scale": bonus_ball_scale,
+		"split": bonus_split,
+		"bucket_width": bonus_bucket_width,
+		"time_on_bucket": bonus_time_on_bucket,
+		"break_score": bonus_break_score,
+	}
+
+
+## 存档用：把字典写回自己（读档 / 清空存档都用）
+func apply_state(s: Dictionary) -> void:
+	level = maxi(1, int(s.get("level", 1)))
+	max_unlocked_level = maxi(level, int(s.get("max_unlocked_level", 1)))
+	var b: Variant = s.get("buffs", {})
+	if not (b is Dictionary):
+		b = {}
+	var d: Dictionary = b as Dictionary
+	bonus_impulse = float(d.get("impulse", 0.0))
+	bonus_charge_time = float(d.get("charge_time", 0.0))
+	bonus_reward = int(d.get("reward", 0))
+	bonus_start_balls = int(d.get("start_balls", 0))
+	bonus_peg_score = int(d.get("peg_score", 0))
+	bonus_combo_max = float(d.get("combo_max", 0.0))
+	bonus_combo_window = float(d.get("combo_window", 0.0))
+	bonus_time = float(d.get("time", 0.0))
+	bonus_jitter_mult = float(d.get("jitter_mult", 1.0))
+	bonus_score_mult = float(d.get("score_mult", 1.0))
+	bonus_ball_scale = float(d.get("ball_scale", 0.0))
+	bonus_split = int(d.get("split", 0))
+	bonus_bucket_width = float(d.get("bucket_width", 0.0))
+	bonus_time_on_bucket = float(d.get("time_on_bucket", 0.0))
+	bonus_break_score = int(d.get("break_score", 0))
 
 
 ## 关卡描述（HUD 显示，让玩家知道这一关变在哪）

@@ -19,6 +19,14 @@ extends CanvasLayer
 @onready var stats_panel: Panel = $StatsPanel
 @onready var stats_label: Label = $StatsPanel/StatsLabel
 @onready var level_scroll: ScrollContainer = $StatsPanel/LevelScroll
+@onready var save_hint: Label = $SaveHint
+@onready var board_panel: Panel = $BoardPanel
+@onready var board_label: Label = $BoardPanel/BoardLabel
+@onready var board_close: Button = $BoardPanel/CloseBoardButton
+@onready var board_clear: Button = $BoardPanel/ClearSaveButton
+@onready var quit_panel: Panel = $QuitPanel
+@onready var quit_ok: Button = $QuitPanel/QuitOkButton
+@onready var quit_cancel: Button = $QuitPanel/QuitCancelButton
 # 关卡按钮容器在运行时创建，避免 tscn 里给 ScrollContainer 定义子节点出问题
 var level_list: HBoxContainer = null
 
@@ -43,6 +51,13 @@ func _ready() -> void:
 	result_panel.visible = false
 	stats_panel.visible = false
 	charge_bar.visible = false
+	board_panel.visible = false
+	quit_panel.visible = false
+	quit_ok.pressed.connect(_on_quit_ok)
+	quit_cancel.pressed.connect(func() -> void: quit_panel.visible = false)
+	board_close.pressed.connect(func() -> void: board_panel.visible = false)
+	board_clear.pressed.connect(_on_clear_save)
+	_refresh_save_hint()
 	_gm.balls_changed.connect(_on_balls_changed)
 	_gm.score_changed.connect(_on_score_changed)
 	_gm.combo_changed.connect(_on_combo_changed)
@@ -69,12 +84,25 @@ func _process(_delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# Tab 打开 / 关闭属性面板
 	if event is InputEventKey and event.pressed and not event.echo:
+		# Tab 打开 / 关闭属性面板
 		if event.keycode == KEY_TAB:
 			stats_panel.visible = not stats_panel.visible
 			if stats_panel.visible:
 				_refresh_stats()
+			get_viewport().set_input_as_handled()
+		# L 打开 / 关闭排行榜
+		elif event.keycode == KEY_L:
+			board_panel.visible = not board_panel.visible
+			if board_panel.visible:
+				_refresh_board()
+			get_viewport().set_input_as_handled()
+		# Esc 退出（先关掉排行榜，再开退出确认面板）
+		elif event.keycode == KEY_ESCAPE:
+			if board_panel.visible:
+				board_panel.visible = false
+			else:
+				quit_panel.visible = not quit_panel.visible
 			get_viewport().set_input_as_handled()
 
 
@@ -106,6 +134,7 @@ func _stats_text() -> String:
 		"",
 		"本局剩余图钉：%s" % _pegs_text(),
 		"已解锁关卡：第 1 - %d 关" % _gm.max_unlocked_level,
+		"历史最高分：%d" % _best_score(),
 	]
 	return "\n".join(lines)
 
@@ -184,6 +213,70 @@ func _on_round_result(success: bool, score: int, level: int) -> void:
 		buff_button_1.text = _buff_text(_buff_ids[0])
 		buff_button_2.text = _buff_text(_buff_ids[1])
 		buff_button_3.text = _buff_text(_buff_ids[2])
+
+	# 结算即存档，顺手刷新存档提示与榜单
+	if _gm.last_run_new_record:
+		result_label.text = "新纪录！\n" + result_label.text
+	_refresh_save_hint()
+	if board_panel.visible:
+		_refresh_board()
+
+
+## 存档单例。用 /root/SaveManager 取而不是直接用自动加载名：
+## 无头测试（godot -s）不会注册自动加载，直接写名字会编译不过。
+func _save_mgr() -> Node:
+	return get_node_or_null("/root/SaveManager")
+
+
+## 历史最高分（存档里读，没存档就是 0）
+func _best_score() -> int:
+	var sm := _save_mgr()
+	if sm == null:
+		return 0
+	return int(sm.state.get("best_score", 0))
+
+
+func _refresh_save_hint() -> void:
+	if save_hint == null:
+		return
+	var sm := _save_mgr()
+	if sm == null:
+		save_hint.text = "存档：未启用"
+		return
+	save_hint.text = "存档：第 %d 关 · 历史最高 %d 分" % [
+		_gm.level if _gm != null else 1, _best_score()
+	]
+
+
+func _refresh_board() -> void:
+	if board_label == null:
+		return
+	var sm := _save_mgr()
+	if sm == null:
+		board_label.text = "排行榜：未启用"
+		return
+	board_label.text = sm.board_text()
+
+
+## 退出前先存一次，再关掉游戏
+func _on_quit_ok() -> void:
+	var sm := _save_mgr()
+	if _gm != null and sm != null:
+		sm.save_state(_gm.get_state())
+	get_tree().quit()
+
+
+## 清空存档与排行榜，并从第 1 关重新开始
+func _on_clear_save() -> void:
+	var sm := _save_mgr()
+	if sm != null:
+		sm.clear_all()
+		if _gm != null:
+			_gm.apply_state(sm.state)
+			_gm.start_round()
+	_refresh_save_hint()
+	_refresh_board()
+	stats_panel.visible = false
 
 
 ## 每局从全部强化里随机抽 3 种
